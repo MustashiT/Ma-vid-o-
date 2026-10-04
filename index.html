@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Osmo Pocket 3 — Pocket Studio</title>
+  <meta name="description" content="DJI Osmo Pocket 3 : capteur 1 pouce, 4K/120 fps, écran rotatif 2 pouces, stabilisation 3 axes. Commandez dès 539 € avec livraison offerte." />
+  <meta name="theme-color" content="#08090b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+  <!-- ============ SVG DEFS (shared gradients) ============ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="gBody" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#16171a" />
+        <stop offset=".35" stop-color="#34363c" />
+        <stop offset=".6" stop-color="#26282d" />
+        <stop offset="1" stop-color="#0e0f11" />
+      </linearGradient>
+      <linearGradient id="gHead" x1="0" x2="1" y1="0" y2="1">
+        <stop offset="0" stop-color="#3b3e44" />
+        <stop offset=".5" stop-color="#202226" />
+        <stop offset="1" stop-color="#0c0d0f" />
+      </linearGradient>
+      <radialGradient id="gLens" cx=".38" cy=".35" r=".75">
+        <stop offset="0" stop-color="#7d6bff" />
+        <stop offset=".35" stop-color="#2a2a7a" />
+        <stop offset=".7" stop-color="#0b0b22" />
+        <stop offset="1" stop-color="#020205" />
+      </radialGradient>
+      <linearGradient id="gScreen" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="#ff9a5a" />
+        <stop offset=".45" stop-color="#ff4d6d" />
+        <stop offset=".75" stop-color="#5b2bd6" />
+        <stop offset="1" stop-color="#14123a" />
+      </linearGradient>
+      <linearGradient id="gSheen" x1="0" x2="1" y1="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".35" />
+        <stop offset=".4" stop-color="#fff" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- ============ LOADER ============ -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader__inner">
+      <div class="loader__rec"><span class="dot"></span> REC</div>
+      <div class="loader__count"><span id="loaderCount">0</span>%</div>
+      <div class="loader__bar"><span id="loaderBar"></span></div>
+      <div class="loader__label">Initialisation du gimbal…</div>
+    </div>
+    <div class="loader__curtain"></div>
+  </div>
+
+  <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__label" id="cursorLabel"></span></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a href="#top" class="nav__logo" data-magnetic>
+      <span class="logo-mark"></span> Pocket&nbsp;Studio
+    </a>
+    <nav class="nav__links" aria-label="Navigation principale">
+      <a href="#capteur">Capteur</a>
+      <a href="#ecran">Écran</a>
+      <a href="#stabilisation">Stabilisation</a>
+      <a href="#modes">Modes</a>
+      <a href="#specs">Specs</a>
+      <a href="#acheter">Acheter</a>
+    </nav>
+    <button class="nav__cart" id="cartOpen" data-magnetic aria-label="Ouvrir le panier">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
+      <span>Panier</span>
+      <span class="nav__badge" id="cartBadge">0</span>
+    </button>
+  </header>
+
+  <main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero">
+      <div class="hero__glow hero__glow--a"></div>
+      <div class="hero__glow hero__glow--b"></div>
+      <div class="hero__grid"></div>
+
+      <div class="hero__copy">
+        <p class="eyebrow reveal-up"><span class="dot dot--live"></span> Nouveau · Disponible maintenant</p>
+        <h1 class="hero__title" aria-label="Osmo Pocket 3">
+          <span class="line"><span class="split">OSMO</span></span>
+          <span class="line"><span class="split">POCKET<em>3</em></span></span>
+        </h1>
+        <p class="hero__sub reveal-up">Un capteur 1&nbsp;pouce. Un gimbal 3&nbsp;axes. Le cinéma, dans la poche.</p>
+        <div class="hero__ctas reveal-up">
+          <a href="#acheter" class="btn btn--primary" data-magnetic data-cursor="Acheter">Acheter — dès 539&nbsp;€</a>
+          <a href="#capteur" class="btn btn--ghost" data-magnetic>Découvrir <span class="arrow">↓</span></a>
+        </div>
+      </div>
+
+      <div class="hero__device" id="heroDevice">
+        <div class="ring ring--1"></div>
+        <div class="ring ring--2"></div>
+        <div class="ring ring--3"></div>
+        <svg class="device" viewBox="0 0 200 540" role="img" aria-label="Illustration de l'Osmo Pocket 3">
+          <ellipse class="device__shadow" cx="100" cy="522" rx="62" ry="8" fill="#000" opacity=".55" />
+          <!-- handle -->
+          <rect x="55" y="170" width="90" height="335" rx="42" fill="url(#gBody)" stroke="#3d4047" stroke-width="1" />
+          <rect x="60" y="176" width="22" height="320" rx="11" fill="#fff" opacity=".04" />
+          <!-- screen -->
+          <g class="device__screen">
+            <rect x="66" y="208" width="68" height="120" rx="11" fill="#050608" stroke="#2c2e33" />
+            <rect x="70" y="212" width="60" height="112" rx="8" fill="url(#gScreen)" />
+            <circle cx="112" cy="236" r="9" fill="#ffd9a0" opacity=".9" />
+            <path d="M70 300 L88 280 L100 292 L114 272 L130 290 L130 316 Q130 324 122 324 L78 324 Q70 324 70 316 Z" fill="#14123a" opacity=".85" />
+            <rect x="74" y="216" width="14" height="5" rx="2.5" fill="#ff3b3b" />
+            <rect x="70" y="212" width="60" height="112" rx="8" fill="url(#gSheen)" />
+          </g>
+          <!-- buttons -->
+          <circle cx="100" cy="382" r="13" fill="#0c0d0f" stroke="#43464d" />
+          <circle class="device__rec" cx="100" cy="382" r="6" fill="#ff3b3b" />
+          <rect x="91" y="414" width="18" height="8" rx="4" fill="#0c0d0f" stroke="#43464d" />
+          <!-- gimbal pan base -->
+          <rect x="80" y="140" width="40" height="38" rx="12" fill="url(#gHead)" stroke="#3d4047" />
+          <g class="device__head">
+            <!-- arm -->
+            <path d="M84 150 L84 120 Q84 108 72 108 L54 108" fill="none" stroke="#2a2c31" stroke-width="14" stroke-linecap="round" />
+            <rect x="40" y="62" width="18" height="60" rx="9" fill="url(#gHead)" stroke="#3d4047" />
+            <!-- camera -->
+            <rect x="54" y="38" width="96" height="98" rx="32" fill="url(#gHead)" stroke="#43464d" />
+            <circle cx="102" cy="86" r="36" fill="#0a0b0d" stroke="#3a3c42" stroke-width="2" />
+            <circle cx="102" cy="86" r="27" fill="url(#gLens)" />
+            <circle cx="102" cy="86" r="11" fill="#030308" />
+            <circle cx="102" cy="86" r="18" fill="none" stroke="#6b5cff" stroke-opacity=".35" />
+            <ellipse class="device__glint" cx="92" cy="76" rx="7" ry="4" fill="#fff" opacity=".55" transform="rotate(-30 92 76)" />
+            <circle cx="138" cy="52" r="2.2" fill="#46d17b" />
+          </g>
+        </svg>
+        <div class="hero__tag hero__tag--1"><b>1"</b> CMOS</div>
+        <div class="hero__tag hero__tag--2"><b>4K</b>/120</div>
+        <div class="hero__tag hero__tag--3"><b>3</b> axes</div>
+      </div>
+
+      <div class="hero__scroll">
+        <span>Scroll</span>
+        <span class="hero__scroll-line"></span>
+      </div>
+    </section>
+
+    <!-- ============ MARQUEE ============ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Capteur CMOS 1"</span><i>✦</i><span>4K / 120 fps</span><i>✦</i><span>Écran OLED rotatif 2"</span><i>✦</i><span>ActiveTrack 6.0</span><i>✦</i><span>10-bit D-Log M</span><i>✦</i><span>Gimbal 3 axes</span><i>✦</i>
+        <span>Capteur CMOS 1"</span><i>✦</i><span>4K / 120 fps</span><i>✦</i><span>Écran OLED rotatif 2"</span><i>✦</i><span>ActiveTrack 6.0</span><i>✦</i><span>10-bit D-Log M</span><i>✦</i><span>Gimbal 3 axes</span><i>✦</i>
+      </div>
+    </div>
+
+    <!-- ============ STATEMENT ============ -->
+    <section class="statement">
+      <p class="statement__text" id="statement">
+        Pas besoin d'un sac rempli de matériel. Sortez-la de votre poche, tournez l'écran, et filmez des images qui ont l'air d'avoir coûté dix fois plus cher.
+      </p>
+    </section>
+
+    <!-- ============ SENSOR (pinned) ============ -->
+    <section class="sensor" id="capteur">
+      <div class="sensor__pin">
+        <div class="sensor__copy">
+          <p class="eyebrow">01 — Capteur</p>
+          <h2 class="h2">Un capteur<br /><span class="grad">1 pouce.</span></h2>
+          <div class="sensor__steps">
+            <p class="sensor__step is-active">Une surface bien plus grande que celle d'un smartphone : plus de lumière, plus de détails, plus de dynamique.</p>
+            <p class="sensor__step">De nuit, le bruit disparaît. Les néons restent nets, les ombres gardent leur texture.</p>
+            <p class="sensor__step">Un vrai flou d'arrière-plan naturel, avec une ouverture f/2.0 et une focale de 20&nbsp;mm.</p>
+          </div>
+        </div>
+        <div class="sensor__visual">
+          <div class="chip chip--phone"><span>Smartphone<br /><b>1/1.3"</b></span></div>
+          <div class="chip chip--one">
+            <div class="chip__die"></div>
+            <span>Osmo Pocket 3<br /><b>1"</b></span>
+          </div>
+          <div class="sensor__ratio"><span id="sensorRatio">0</span>× <small>surface vs. 1/1.3"</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN (pinned rotation) ============ -->
+    <section class="screen" id="ecran">
+      <div class="screen__pin">
+        <div class="screen__copy">
+          <p class="eyebrow">02 — Écran</p>
+          <h2 class="h2">Tournez.<br /><span class="grad">C'est allumé.</span></h2>
+          <p class="lead">L'écran OLED tactile de 2&nbsp;pouces pivote à 90° et démarre la caméra instantanément. Paysage pour le cinéma, portrait pour les réseaux. 700&nbsp;nits, lisible en plein soleil.</p>
+          <div class="screen__modes">
+            <span class="pill is-on" id="pillV">9:16 Portrait</span>
+            <span class="pill" id="pillH">16:9 Paysage</span>
+          </div>
+        </div>
+        <div class="screen__stage">
+          <svg class="device device--big" viewBox="0 0 260 540" aria-hidden="true">
+            <ellipse cx="130" cy="522" rx="62" ry="8" fill="#000" opacity=".55" />
+            <rect x="85" y="170" width="90" height="335" rx="42" fill="url(#gBody)" stroke="#3d4047" />
+            <rect x="110" y="140" width="40" height="38" rx="12" fill="url(#gHead)" stroke="#3d4047" />
+            <path d="M114 150 L114 120 Q114 108 102 108 L84 108" fill="none" stroke="#2a2c31" stroke-width="14" stroke-linecap="round" />
+            <rect x="70" y="62" width="18" height="60" rx="9" fill="url(#gHead)" stroke="#3d4047" />
+            <rect x="84" y="38" width="96" height="98" rx="32" fill="url(#gHead)" stroke="#43464d" />
+            <circle cx="132" cy="86" r="36" fill="#0a0b0d" stroke="#3a3c42" stroke-width="2" />
+            <circle cx="132" cy="86" r="27" fill="url(#gLens)" />
+            <circle cx="132" cy="86" r="11" fill="#030308" />
+            <circle cx="130" cy="382" r="13" fill="#0c0d0f" stroke="#43464d" />
+            <circle cx="130" cy="382" r="6" fill="#ff3b3b" />
+            <g id="rotScreen">
+              <rect x="96" y="208" width="68" height="120" rx="11" fill="#050608" stroke="#2c2e33" />
+              <rect id="rotDisplay" x="100" y="212" width="60" height="112" rx="8" fill="#050608" />
+              <g id="rotContent" opacity="0">
+                <rect x="100" y="212" width="60" height="112" rx="8" fill="url(#gScreen)" />
+                <circle cx="142" cy="236" r="9" fill="#ffd9a0" opacity=".9" />
+                <path d="M100 300 L118 280 L130 292 L144 272 L160 290 L160 316 Q160 324 152 324 L108 324 Q100 324 100 316 Z" fill="#14123a" opacity=".85" />
+                <rect x="104" y="216" width="14" height="5" rx="2.5" fill="#ff3b3b" />
+              </g>
+              <rect x="100" y="212" width="60" height="112" rx="8" fill="url(#gSheen)" />
+            </g>
+          </svg>
+          <div class="screen__power" id="screenPower">POWER ON</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STABILISATION ============ -->
+    <section class="stab" id="stabilisation">
+      <div class="container">
+        <p class="eyebrow">03 — Stabilisation</p>
+        <h2 class="h2">Courez. Sautez.<br /><span class="grad">L'image, elle, ne bouge pas.</span></h2>
+        <div class="stab__chart">
+          <svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-label="Comparaison d'un tracé tremblant et d'un tracé stabilisé">
+            <line x1="0" y1="150" x2="1000" y2="150" class="stab__axis" />
+            <path class="stab__shaky" d="M0 150 L30 112 L55 188 L80 98 L110 205 L135 120 L160 182 L190 84 L215 210 L245 130 L270 196 L300 92 L325 176 L355 104 L380 222 L410 118 L435 190 L465 76 L490 200 L520 128 L545 214 L575 96 L600 170 L630 88 L655 206 L685 122 L710 192 L740 80 L765 210 L795 118 L820 184 L850 100 L875 200 L905 126 L930 196 L960 104 L1000 150" />
+            <path class="stab__smooth" d="M0 150 C 200 140, 300 160, 500 150 S 800 142, 1000 150" />
+          </svg>
+          <div class="stab__legend">
+            <span><i class="lg lg--shaky"></i>À main levée</span>
+            <span><i class="lg lg--smooth"></i>Gimbal 3 axes</span>
+          </div>
+        </div>
+        <div class="stab__axes">
+          <div class="axis-card" data-tilt>
+            <div class="axis-card__icon"><span class="spin spin--pan"></span></div>
+            <h3>Pan</h3><p>Rotation horizontale fluide pour suivre le sujet sans à-coups.</p>
+          </div>
+          <div class="axis-card" data-tilt>
+            <div class="axis-card__icon"><span class="spin spin--tilt"></span></div>
+            <h3>Tilt</h3><p>Compense chaque pas, chaque marche, chaque saut.</p>
+          </div>
+          <div class="axis-card" data-tilt>
+            <div class="axis-card__icon"><span class="spin spin--roll"></span></div>
+            <h3>Roll</h3><p>L'horizon reste parfaitement droit, même en mouvement.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURES ============ -->
+    <section class="features">
+      <div class="container">
+        <p class="eyebrow">04 — Intelligence</p>
+        <h2 class="h2">Tout ce qu'il faut.<br /><span class="grad">Rien de trop.</span></h2>
+        <div class="bento">
+          <article class="tile tile--wide" data-tilt>
+            <div class="tile__track">
+              <div class="track-box"><span class="track-box__corner"></span><span class="track-box__corner"></span><span class="track-box__corner"></span><span class="track-box__corner"></span></div>
+              <div class="track-subject"></div>
+            </div>
+            <h3>ActiveTrack 6.0</h3>
+            <p>Le sujet reste au centre du cadre, même quand il se retourne ou disparaît un instant.</p>
+          </article>
+          <article class="tile" data-tilt>
+            <div class="tile__wave">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <h3>Son stéréo</h3>
+            <p>Trois micros intégrés et la compatibilité DJI Mic&nbsp;2 sans récepteur.</p>
+          </article>
+          <article class="tile" data-tilt>
+            <div class="tile__log"><span class="log-a">D-LOG M</span><span class="log-b">GRADED</span></div>
+            <h3>10-bit D-Log M</h3>
+            <p>Plus d'un milliard de couleurs pour un étalonnage digne d'un pro. HLG inclus.</p>
+          </article>
+          <article class="tile" data-tilt>
+            <div class="tile__battery"><span class="tile__battery-fill"></span></div>
+            <h3>Charge éclair</h3>
+            <p>80&nbsp;% en 16&nbsp;minutes. Jusqu'à 166&nbsp;minutes d'autonomie.</p>
+          </article>
+          <article class="tile" data-tilt>
+            <div class="tile__face"><span class="face"></span><span class="frame"></span></div>
+            <h3>Mode portrait & beauté</h3>
+            <p>Cadrage vertical natif et retouche du visage en temps réel.</p>
+          </article>
+          <article class="tile" data-tilt>
+            <div class="tile__live"><span class="live-badge"><span class="dot"></span>LIVE</span><span class="heart">♥</span><span class="heart">♥</span><span class="heart">♥</span><span class="viewers">● 2 418 spectateurs</span></div>
+            <h3>Live & webcam</h3>
+            <p>Diffusez en direct sur vos réseaux ou branchez-la en USB-C comme webcam 4K.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MODES (horizontal scroll) ============ -->
+    <section class="modes" id="modes">
+      <div class="modes__pin">
+        <div class="modes__head">
+          <p class="eyebrow">05 — Modes</p>
+          <h2 class="h2">Un seul geste,<br /><span class="grad">mille histoires.</span></h2>
+        </div>
+        <div class="modes__track" id="modesTrack">
+          <article class="mode mode--vlog">
+            <div class="mode__scene"><span class="sun"></span><span class="hill"></span></div>
+            <div class="mode__meta"><span class="mode__n">01</span><h3>Vlog</h3><p>Caméra retournée en un clic, cadrage automatique sur votre visage.</p></div>
+          </article>
+          <article class="mode mode--slow">
+            <div class="mode__scene"><span class="drop"></span><span class="drop"></span><span class="drop"></span></div>
+            <div class="mode__meta"><span class="mode__n">02</span><h3>Slow-motion</h3><p>4K à 120&nbsp;i/s. Ralentissez le monde ×4 sans perdre un pixel.</p></div>
+          </article>
+          <article class="mode mode--night">
+            <div class="mode__scene"><span class="star"></span><span class="star"></span><span class="star"></span><span class="moon"></span></div>
+            <div class="mode__meta"><span class="mode__n">03</span><h3>Nuit</h3><p>Le capteur 1" réduit le bruit pour des scènes nocturnes propres.</p></div>
+          </article>
+          <article class="mode mode--lapse">
+            <div class="mode__scene"><span class="cloud"></span><span class="cloud"></span><span class="sun"></span></div>
+            <div class="mode__meta"><span class="mode__n">04</span><h3>Timelapse</h3><p>Hyperlapse et motionlapse avec mouvement de gimbal programmé.</p></div>
+          </article>
+          <article class="mode mode--pano">
+            <div class="mode__scene"><span class="mount"></span><span class="mount"></span><span class="mount"></span></div>
+            <div class="mode__meta"><span class="mode__n">05</span><h3>Panorama</h3><p>Le gimbal balaie la scène tout seul. 180° ou 3×3, au choix.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SPECS ============ -->
+    <section class="specs" id="specs">
+      <div class="container">
+        <p class="eyebrow">06 — Fiche technique</p>
+        <h2 class="h2">Les chiffres<br /><span class="grad">parlent d'eux-mêmes.</span></h2>
+        <div class="specs__grid">
+          <div class="spec"><span class="spec__num" data-count="4" data-suffix="K">0</span><span class="spec__label">Vidéo jusqu'à 120 i/s</span></div>
+          <div class="spec"><span class="spec__num" data-count="1" data-suffix="&quot;">0</span><span class="spec__label">Capteur CMOS</span></div>
+          <div class="spec"><span class="spec__num" data-count="2" data-suffix="&quot;">0</span><span class="spec__label">Écran OLED rotatif</span></div>
+          <div class="spec"><span class="spec__num" data-count="179" data-suffix=" g">0</span><span class="spec__label">Poids plume</span></div>
+          <div class="spec"><span class="spec__num" data-count="166" data-suffix=" min">0</span><span class="spec__label">Autonomie max.</span></div>
+          <div class="spec"><span class="spec__num" data-count="16" data-suffix=" min">0</span><span class="spec__label">Pour charger à 80 %</span></div>
+          <div class="spec"><span class="spec__num" data-count="700" data-suffix=" nits">0</span><span class="spec__label">Luminosité de l'écran</span></div>
+          <div class="spec"><span class="spec__num" data-count="10" data-suffix="-bit">0</span><span class="spec__label">D-Log M & HLG</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BUY ============ -->
+    <section class="buy" id="acheter">
+      <div class="container buy__wrap">
+        <div class="buy__visual">
+          <div class="buy__halo"></div>
+          <svg class="device device--buy" viewBox="0 0 200 540" aria-hidden="true">
+            <use href="#buyDevice" />
+          </svg>
+          <ul class="buy__extras" id="buyExtras">
+            <li data-combo>DJI Mic 2 (émetteur)</li>
+            <li data-combo>Poignée batterie</li>
+            <li data-combo>Objectif grand-angle</li>
+            <li data-combo>Mini trépied</li>
+            <li data-combo>Sacoche de transport</li>
+          </ul>
+        </div>
+
+        <div class="buy__panel">
+          <p class="eyebrow">07 — Commander</p>
+          <h2 class="h2 h2--sm">Choisissez votre pack.</h2>
+
+          <div class="packs" role="radiogroup" aria-label="Choix du pack">
+            <label class="pack is-selected">
+              <input type="radio" name="pack" value="standard" checked />
+              <span class="pack__top"><span class="pack__name">Standard</span><span class="pack__price">539 €</span></span>
+              <span class="pack__desc">Osmo Pocket 3, housse de protection, dragonne, câble USB-C.</span>
+            </label>
+            <label class="pack">
+              <input type="radio" name="pack" value="creator" />
+              <span class="pack__badge">Le plus choisi</span>
+              <span class="pack__top"><span class="pack__name">Creator Combo</span><span class="pack__price">699 €</span></span>
+              <span class="pack__desc">Tout le Standard + DJI Mic 2, poignée batterie, objectif grand-angle, mini trépied et sacoche.</span>
+            </label>
+          </div>
+
+          <div class="buy__row">
+            <div class="qty" aria-label="Quantité">
+              <button type="button" id="qtyMinus" aria-label="Diminuer">−</button>
+              <span id="qtyVal">1</span>
+              <button type="button" id="qtyPlus" aria-label="Augmenter">+</button>
+            </div>
+            <div class="buy__total">
+              <span class="buy__total-label">Total</span>
+              <span class="buy__total-val"><span id="buyTotal">539</span>&nbsp;€</span>
+            </div>
+          </div>
+
+          <button class="btn btn--primary btn--xl" id="addToCart" data-magnetic data-cursor="Ajouter">
+            <span class="btn__label">Ajouter au panier</span>
+          </button>
+
+          <ul class="perks">
+            <li><span>🚚</span> Livraison offerte en 48&nbsp;h</li>
+            <li><span>↺</span> Retour gratuit sous 30&nbsp;jours</li>
+            <li><span>🛡</span> Garantie 2&nbsp;ans</li>
+            <li><span>💳</span> Paiement en 3× sans frais</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section class="faq">
+      <div class="container container--narrow">
+        <p class="eyebrow">08 — Questions</p>
+        <h2 class="h2 h2--sm">On vous répond.</h2>
+        <div class="faq__list">
+          <details class="faq__item">
+            <summary>Quelle est la différence entre Standard et Creator Combo&nbsp;?</summary>
+            <div class="faq__body"><p>Le Creator Combo ajoute un émetteur DJI Mic&nbsp;2 (qui se connecte directement à la caméra), une poignée batterie pour prolonger l'autonomie, un objectif grand-angle, un mini trépied et une sacoche. Idéal si vous filmez souvent en extérieur ou parlez face caméra.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary>Puis-je l'utiliser avec mon smartphone&nbsp;?</summary>
+            <div class="faq__body"><p>Oui, via l'application DJI Mimo en Wi-Fi et Bluetooth : contrôle à distance, transfert rapide des fichiers et montage automatique.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary>Quels sont les délais de livraison&nbsp;?</summary>
+            <div class="faq__body"><p>Les commandes passées avant 15&nbsp;h sont expédiées le jour même et livrées en 48&nbsp;h en France métropolitaine. La livraison est offerte.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary>Quelle carte mémoire choisir&nbsp;?</summary>
+            <div class="faq__body"><p>Une carte microSD UHS-I classe V30 minimum, jusqu'à 512&nbsp;Go. Pour la 4K/120 i/s, privilégiez une carte rapide et de bonne marque.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ OUTRO ============ -->
+    <section class="outro">
+      <h2 class="outro__title"><span>Filmez</span> <span>plus</span> <span class="grad">grand.</span></h2>
+      <a href="#acheter" class="btn btn--primary btn--xl" data-magnetic data-cursor="Go">Je la veux</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__big" aria-hidden="true">POCKET 3</div>
+    <div class="footer__row">
+      <span>© <span id="year"></span> Pocket Studio — Revendeur indépendant</span>
+      <span>DJI et Osmo sont des marques de SZ DJI Technology Co., Ltd.</span>
+      <a href="#top">Retour en haut ↑</a>
+    </div>
+  </footer>
+
+  <!-- device used in buy section -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="buyDevice" viewBox="0 0 200 540">
+      <ellipse cx="100" cy="522" rx="62" ry="8" fill="#000" opacity=".55" />
+      <rect x="55" y="170" width="90" height="335" rx="42" fill="url(#gBody)" stroke="#3d4047" />
+      <rect x="66" y="208" width="68" height="120" rx="11" fill="#050608" stroke="#2c2e33" />
+      <rect x="70" y="212" width="60" height="112" rx="8" fill="url(#gScreen)" />
+      <path d="M70 300 L88 280 L100 292 L114 272 L130 290 L130 316 Q130 324 122 324 L78 324 Q70 324 70 316 Z" fill="#14123a" opacity=".85" />
+      <circle cx="112" cy="236" r="9" fill="#ffd9a0" opacity=".9" />
+      <rect x="70" y="212" width="60" height="112" rx="8" fill="url(#gSheen)" />
+      <circle cx="100" cy="382" r="13" fill="#0c0d0f" stroke="#43464d" />
+      <circle cx="100" cy="382" r="6" fill="#ff3b3b" />
+      <rect x="80" y="140" width="40" height="38" rx="12" fill="url(#gHead)" stroke="#3d4047" />
+      <path d="M84 150 L84 120 Q84 108 72 108 L54 108" fill="none" stroke="#2a2c31" stroke-width="14" stroke-linecap="round" />
+      <rect x="40" y="62" width="18" height="60" rx="9" fill="url(#gHead)" stroke="#3d4047" />
+      <rect x="54" y="38" width="96" height="98" rx="32" fill="url(#gHead)" stroke="#43464d" />
+      <circle cx="102" cy="86" r="36" fill="#0a0b0d" stroke="#3a3c42" stroke-width="2" />
+      <circle cx="102" cy="86" r="27" fill="url(#gLens)" />
+      <circle cx="102" cy="86" r="11" fill="#030308" />
+      <ellipse cx="92" cy="76" rx="7" ry="4" fill="#fff" opacity=".55" transform="rotate(-30 92 76)" />
+    </symbol>
+  </svg>
+
+  <!-- ============ CART DRAWER ============ -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-label="Panier" aria-hidden="true">
+    <div class="drawer__head">
+      <h3>Votre panier</h3>
+      <button class="icon-btn" id="cartClose" aria-label="Fermer le panier">✕</button>
+    </div>
+    <div class="drawer__items" id="cartItems"></div>
+    <div class="drawer__foot">
+      <div class="drawer__line"><span>Sous-total</span><span id="cartSubtotal">0 €</span></div>
+      <div class="drawer__line"><span>Livraison</span><span>Offerte</span></div>
+      <div class="drawer__line drawer__line--total"><span>Total TTC</span><span id="cartTotal">0 €</span></div>
+      <button class="btn btn--primary btn--block" id="checkoutBtn">Passer commande</button>
+    </div>
+  </aside>
+
+  <!-- ============ CHECKOUT MODAL ============ -->
+  <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle">
+    <div class="modal__card">
+      <button class="icon-btn modal__close" id="modalClose" aria-label="Fermer">✕</button>
+      <form id="checkoutForm" class="checkout">
+        <h3 id="modalTitle">Finaliser la commande</h3>
+        <p class="checkout__sum" id="checkoutSum"></p>
+        <div class="field-row">
+          <label class="field"><span>Prénom</span><input required name="first" autocomplete="given-name" /></label>
+          <label class="field"><span>Nom</span><input required name="last" autocomplete="family-name" /></label>
+        </div>
+        <label class="field"><span>E-mail</span><input required type="email" name="email" autocomplete="email" /></label>
+        <label class="field"><span>Adresse de livraison</span><input required name="address" autocomplete="street-address" /></label>
+        <div class="field-row">
+          <label class="field"><span>Code postal</span><input required name="zip" autocomplete="postal-code" inputmode="numeric" /></label>
+          <label class="field"><span>Ville</span><input required name="city" autocomplete="address-level2" /></label>
+        </div>
+        <button class="btn btn--primary btn--block" type="submit">Confirmer et payer</button>
+        <p class="checkout__note">Vous serez redirigé vers notre partenaire de paiement sécurisé.</p>
+      </form>
+      <div class="success" id="success" hidden>
+        <svg viewBox="0 0 80 80" class="success__check"><circle cx="40" cy="40" r="36" /><path d="M24 41 L35 52 L57 29" /></svg>
+        <h3>Merci&nbsp;!</h3>
+        <p>Votre commande est enregistrée. Un e-mail de confirmation arrive dans votre boîte.</p>
+        <button class="btn btn--ghost" id="successClose">Continuer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/vendor/ScrollTrigger.min.js"></script>
+  <script src="js/vendor/lenis.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
