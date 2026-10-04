@@ -3,6 +3,7 @@ import { Composition, Folder } from "remotion";
 import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
+import { PS5_DURATION, PS5Showcase } from "./PS5/PS5Showcase";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -51,7 +52,14 @@ export const RemotionRoot: React.FC = () => {
           titleColor: "#000000",
         }}
       />
-
+      <Composition
+        id="PS5Showcase"
+        component={PS5Showcase}
+        durationInFrames={PS5_DURATION}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
     </>
   );
 };
