@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pluie de Comètes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Chakra+Petch:wght@400;600&display=swap">
+<style>
+  /* Plein écran : un ciel nocturne, le HUD en haut, les menus en surimpression */
+  :root {
+    --nuit: #0d0b24;
+    --nuit-2: #1c1546;
+    --encre: #ece6ff;
+    --brume: #9b91c9;
+    --ambre: #ffc24b;
+    --braise: #ff6b5b;
+    --glace: #6fd8ff;
+    --f-titre: "Silkscreen", "Courier New", monospace;
+    --f-texte: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; margin: 0; }
+  [hidden] { display: none !important; }
+  body {
+    background: var(--nuit);
+    color: var(--encre);
+    font-family: var(--f-texte);
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  #app { position: relative; height: 100%; width: 100%; }
+  #jeu { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+
+  .hud {
+    position: absolute; inset: 0 0 auto 0;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 0;
+    pointer-events: none;
+    font-family: var(--f-titre);
+    font-variant-numeric: tabular-nums;
+  }
+  .hud .bloc { display: grid; gap: 2px; }
+  .hud .etiquette { font-size: 10px; letter-spacing: .12em; color: var(--brume); text-transform: uppercase; }
+  .hud .valeur { font-size: 20px; }
+  .hud .droite { text-align: right; }
+  #vies { color: var(--braise); letter-spacing: .15em; font-size: 18px; }
+  #combo { color: var(--ambre); font-size: 12px; min-height: 1em; }
+  .boutons-hud { display: flex; gap: 8px; pointer-events: auto; }
+  .petit {
+    font-family: var(--f-titre); font-size: 12px;
+    background: color-mix(in srgb, var(--nuit-2) 80%, transparent);
+    color: var(--encre); border: 1px solid var(--brume); border-radius: 4px;
+    padding: 6px 8px; cursor: pointer;
+  }
+  .petit:focus-visible, .gros:focus-visible { outline: 2px solid var(--ambre); outline-offset: 3px; }
+
+  .ecran {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    padding: 16px;
+    background: color-mix(in srgb, var(--nuit) 72%, transparent);
+  }
+  .carte {
+    max-width: 30rem; width: 100%;
+    display: grid; gap: 16px; justify-items: center; text-align: center;
+  }
+  h1 {
+    font-family: var(--f-titre); font-weight: 700;
+    font-size: clamp(30px, 8vw, 54px); line-height: 1.05; margin: 0;
+    color: var(--ambre);
+    text-shadow: 4px 4px 0 var(--braise);
+    text-wrap: balance;
+  }
+  h2 { font-family: var(--f-titre); font-size: clamp(22px, 6vw, 34px); margin: 0; color: var(--encre); }
+  .carte p { margin: 0; line-height: 1.5; color: var(--brume); max-width: 26rem; }
+  .regles {
+    display: grid; grid-template-columns: auto 1fr; gap: 8px 12px;
+    text-align: left; font-size: 15px; color: var(--encre);
+  }
+  .regles span:nth-child(odd) { font-family: var(--f-titre); color: var(--ambre); font-size: 13px; padding-top: 2px; }
+  .gros {
+    font-family: var(--f-titre); font-size: 18px;
+    background: var(--ambre); color: var(--nuit);
+    border: 0; border-radius: 4px;
+    padding: 14px 28px; cursor: pointer;
+    box-shadow: 4px 4px 0 var(--braise);
+  }
+  .gros:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--braise); }
+  .score-final { font-family: var(--f-titre); font-size: 44px; color: var(--ambre); font-variant-numeric: tabular-nums; }
+  .record { color: var(--glace); font-family: var(--f-titre); font-size: 13px; letter-spacing: .08em; }
+  .indice { font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="jeu" aria-label="Zone de jeu"></canvas>
+
+  <div class="hud">
+    <div class="bloc">
+      <span class="etiquette">Score</span>
+      <span class="valeur" id="score">0</span>
+      <span id="combo"></span>
+    </div>
+    <div class="bloc droite">
+      <div class="boutons-hud">
+        <button class="petit" id="btn-son" type="button" aria-label="Couper le son">SON ON</button>
+        <button class="petit" id="btn-pause" type="button" aria-label="Pause">II</button>
+      </div>
+      <span id="vies" aria-label="Vies">♥♥♥</span>
+      <span class="etiquette">Niveau <span id="niveau">1</span></span>
+    </div>
+  </div>
+
+  <div class="ecran" id="ecran-menu">
+    <div class="carte">
+      <h1>Pluie de Comètes</h1>
+      <p>Ta fusée traverse une averse de météores. Esquive les rochers, attrape les étoiles et tiens le plus longtemps possible.</p>
+      <div class="regles">
+        <span>← →</span><span>Déplacer la fusée (ou glisser le doigt)</span>
+        <span>★</span><span>+10 points, enchaîne-les pour un multiplicateur</span>
+        <span>◎</span><span>Bouclier pendant 5 secondes</span>
+        <span>♥</span><span>Une vie en plus (rare)</span>
+        <span>P</span><span>Pause</span>
+      </div>
+      <button class="gros" id="btn-jouer" type="button">JOUER</button>
+      <span class="record" id="record-menu"></span>
+    </div>
+  </div>
+
+  <div class="ecran" id="ecran-pause" hidden>
+    <div class="carte">
+      <h2>Pause</h2>
+      <button class="gros" id="btn-reprendre" type="button">REPRENDRE</button>
+    </div>
+  </div>
+
+  <div class="ecran" id="ecran-fin" hidden>
+    <div class="carte">
+      <h2>Fusée détruite</h2>
+      <div class="score-final" id="score-final">0</div>
+      <span class="record" id="record-fin"></span>
+      <button class="gros" id="btn-rejouer" type="button">REJOUER</button>
+      <p class="indice">Espace ou Entrée pour relancer</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const cvs = document.getElementById('jeu');
+  const ctx = cvs.getContext('2d');
+  const $ = id => document.getElementById(id);
+  const ui = {
+    score: $('score'), combo: $('combo'), vies: $('vies'), niveau: $('niveau'),
+    menu: $('ecran-menu'), pause: $('ecran-pause'), fin: $('ecran-fin'),
+    scoreFinal: $('score-final'), recordMenu: $('record-menu'), recordFin: $('record-fin'),
+    son: $('btn-son')
+  };
+  const COUL = { ambre: '#ffc24b', braise: '#ff6b5b', glace: '#6fd8ff', encre: '#ece6ff', roche: '#7a6aa8', rocheClair: '#a898d8' };
+  const reduitMouvement = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- Stockage du record ----------
+  let record = 0;
+  try { record = Number(localStorage.getItem('comete-record')) || 0; } catch (e) {}
+  function sauverRecord() { try { localStorage.setItem('comete-record', String(record)); } catch (e) {} }
+
+  // ---------- Son ----------
+  let audio = null, sonActif = true;
+  function initAudio() {
+    if (audio) return;
+    try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { audio = null; }
+  }
+  function bip(freq, duree, type = 'square', vol = 0.06, glisse = 0) {
+    if (!audio || !sonActif) return;
+    const t = audio.currentTime;
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t);
+    if (glisse) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq + glisse), t + duree);
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
+    o.connect(g).connect(audio.destination);
+    o.start(t); o.stop(t + duree);
+  }
+  ui.son.addEventListener('click', () => {
+    sonActif = !sonActif;
+    ui.son.textContent = sonActif ? 'SON ON' : 'SON OFF';
+    ui.son.setAttribute('aria-label', sonActif ? 'Couper le son' : 'Activer le son');
+  });
+
+  // ---------- Dimensions ----------
+  let W = 0, H = 0;
+  function redim() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const r = cvs.getBoundingClientRect();
+    W = r.width; H = r.height;
+    cvs.width = Math.round(W * dpr); cvs.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (fusee) { fusee.y = H - 80; fusee.x = Math.min(Math.max(fusee.x, 20), W - 20); }
+  }
+  window.addEventListener('resize', redim);
+
+  // ---------- Fond étoilé (parallaxe) ----------
+  const fond = [];
+  function creerFond() {
+    fond.length = 0;
+    for (let i = 0; i < 140; i++) {
+      const p = Math.random();
+      fond.push({ x: Math.random(), y: Math.random(), z: 0.2 + p * 0.8, s: p < 0.85 ? 1 : 2 });
+    }
+  }
+
+  // ---------- État ----------
+  let etat = 'menu';
+  let fusee = null, meteores = [], bonus = [], particules = [], textes = [];
+  let score = 0, vies = 3, temps = 0, niveau = 1;
+  let combo = 1, dernierBonus = -10;
+  let cadMeteore = 0, cadEtoile = 0, cadSpecial = 0;
+  let secousse = 0;
+  const touches = {};
+  let cibleX = null;
+
+  function nouvellePartie() {
+    fusee = { x: W / 2, y: H - 80, vx: 0, invuln: 0, bouclier: 0 };
+    meteores = []; bonus = []; particules = []; textes = [];
+    score = 0; vies = 3; temps = 0; niveau = 1; combo = 1; dernierBonus = -10;
+    cadMeteore = 0.6; cadEtoile = 1.2; cadSpecial = 12;
+    cibleX = null;
+    majHUD();
+  }
+
+  function majHUD() {
+    ui.score.textContent = Math.floor(score);
+    ui.vies.textContent = '♥'.repeat(Math.max(vies, 0)) || '–';
+    ui.niveau.textContent = niveau;
+    ui.combo.textContent = combo > 1 ? '×' + combo : '';
+  }
+
+  function montrer(nom) {
+    ui.menu.hidden = nom !== 'menu';
+    ui.pause.hidden = nom !== 'pause';
+    ui.fin.hidden = nom !== 'fin';
+  }
+
+  function demarrer() {
+    initAudio();
+    if (audio && audio.state === 'suspended') audio.resume();
+    nouvellePartie();
+    etat = 'jeu';
+    montrer(null);
+    bip(440, 0.08); setTimeout(() => bip(660, 0.08), 90); setTimeout(() => bip(880, 0.12), 180);
+  }
+  function basculerPause() {
+    if (etat === 'jeu') { etat = 'pause'; montrer('pause'); }
+    else if (etat === 'pause') { etat = 'jeu'; montrer(null); }
+  }
+  function finPartie() {
+    etat = 'fin';
+    const s = Math.floor(score);
+    const nouveau = s > record;
+    if (nouveau) { record = s; sauverRecord(); }
+    ui.scoreFinal.textContent = s;
+    ui.recordFin.textContent = nouveau ? 'NOUVEAU RECORD !' : 'Record : ' + record;
+    montrer('fin');
+    bip(220, 0.5, 'sawtooth', 0.08, -180);
+  }
+
+  $('btn-jouer').addEventListener('click', demarrer);
+  $('btn-rejouer').addEventListener('click', demarrer);
+  $('btn-reprendre').addEventListener('click', basculerPause);
+  $('btn-pause').addEventListener('click', () => { if (etat === 'jeu' || etat === 'pause') basculerPause(); });
+
+  // ---------- Entrées ----------
+  window.addEventListener('keydown', e => {
+    const k = e.key;
+    if (['ArrowLeft', 'ArrowRight', ' ', 'ArrowUp', 'ArrowDown'].includes(k)) e.preventDefault();
+    touches[k.toLowerCase()] = true;
+    if (k === 'ArrowLeft' || k === 'ArrowRight' || k.toLowerCase() === 'q' || k.toLowerCase() === 'a' || k.toLowerCase() === 'd') cibleX = null;
+    if ((k === ' ' || k === 'Enter') && (etat === 'menu' || etat === 'fin')) { e.preventDefault(); demarrer(); }
+    if ((k === 'p' || k === 'P' || k === 'Escape') && (etat === 'jeu' || etat === 'pause')) basculerPause();
+  });
+  window.addEventListener('keyup', e => { touches[e.key.toLowerCase()] = false; });
+  window.addEventListener('blur', () => { for (const k in touches) touches[k] = false; if (etat === 'jeu') basculerPause(); });
+
+  let pointeurActif = false;
+  cvs.addEventListener('pointerdown', e => { pointeurActif = true; cibleX = e.clientX - cvs.getBoundingClientRect().left; cvs.setPointerCapture?.(e.pointerId); });
+  cvs.addEventListener('pointermove', e => { if (pointeurActif || e.pointerType === 'mouse') cibleX = e.clientX - cvs.getBoundingClientRect().left; });
+  const lacher = () => { pointeurActif = false; };
+  cvs.addEventListener('pointerup', lacher);
+  cvs.addEventListener('pointercancel', lacher);
+
+  // ---------- Création d'objets ----------
+  const alea = (a, b) => a + Math.random() * (b - a);
+
+  function creerMeteore() {
+    const r = alea(12, 18 + niveau * 2.5);
+    const n = 9, forme = [];
+    for (let i = 0; i < n; i++) forme.push(alea(0.72, 1.05));
+    const vitesse = alea(110, 170) + niveau * 22;
+    meteores.push({
+      x: alea(r, W - r), y: -r - 10, r,
+      vx: alea(-30, 30) * Math.min(niveau, 4) / 2, vy: vitesse * (40 / (r + 20)) + vitesse * 0.4,
+      rot: Math.random() * 6.28, vr: alea(-2, 2), forme
+    });
+  }
+  function creerBonus(type) {
+    bonus.push({ type, x: alea(24, W - 24), y: -20, vy: alea(90, 130) + niveau * 8, t: Math.random() * 6 });
+  }
+  function explosion(x, y, coul, n = 18, vit = 220) {
+    if (reduitMouvement) n = Math.ceil(n / 3);
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, v = Math.random() * vit;
+      particules.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, vie: alea(0.4, 0.9), max: 0.9, coul, taille: alea(1.5, 3.5) });
+    }
+  }
+  function texteFlottant(x, y, txt, coul) { textes.push({ x, y, txt, coul, vie: 0.9 }); }
+
+  // ---------- Mise à jour ----------
+  function maj(dt) {
+    temps += dt;
+    const nouveauNiveau = 1 + Math.floor(temps / 15);
+    if (nouveauNiveau !== niveau) {
+      niveau = nouveauNiveau;
+      texteFlottant(W / 2, H / 2, 'NIVEAU ' + niveau, COUL.glace);
+      bip(523, 0.1, 'triangle', 0.08); setTimeout(() => bip(784, 0.15, 'triangle', 0.08), 110);
+    }
+    score += dt * 5 * niveau;
+
+    // Fusée
+    const acc = 2600, vmax = 460;
+    let dir = 0;
+    if (touches['arrowleft'] || touches['q'] || touches['a']) dir -= 1;
+    if (touches['arrowright'] || touches['d']) dir += 1;
+    if (dir !== 0) {
+      fusee.vx += dir * acc * dt;
+    } else if (cibleX !== null) {
+      const ecart = cibleX - fusee.x;
+      fusee.vx = Math.max(-vmax * 1.3, Math.min(vmax * 1.3, ecart * 12));
+    } else {
+      fusee.vx *= Math.pow(0.0008, dt);
+    }
+    if (dir !== 0) fusee.vx = Math.max(-vmax, Math.min(vmax, fusee.vx));
+    fusee.x += fusee.vx * dt;
+    if (fusee.x < 18) { fusee.x = 18; fusee.vx = 0; }
+    if (fusee.x > W - 18) { fusee.x = W - 18; fusee.vx = 0; }
+    fusee.invuln = Math.max(0, fusee.invuln - dt);
+    fusee.bouclier = Math.max(0, fusee.bouclier - dt);
+
+    // Traînée du réacteur
+    if (Math.random() < 0.8) particules.push({
+      x: fusee.x + alea(-4, 4), y: fusee.y + 20, vx: alea(-20, 20), vy: alea(120, 200),
+      vie: 0.35, max: 0.35, coul: Math.random() < 0.5 ? COUL.ambre : COUL.braise, taille: alea(2, 4)
+    });
+
+    // Apparitions
+    cadMeteore -= dt;
+    if (cadMeteore <= 0) { creerMeteore(); cadMeteore = Math.max(0.16, 0.85 - niveau * 0.07) * alea(0.6, 1.3); }
+    cadEtoile -= dt;
+    if (cadEtoile <= 0) { creerBonus('etoile'); cadEtoile = alea(0.9, 1.8); }
+    cadSpecial -= dt;
+    if (cadSpecial <= 0) { creerBonus(Math.random() < 0.25 ? 'vie' : 'bouclier'); cadSpecial = alea(10, 16); }
+
+    if (temps - dernierBonus > 2.2 && combo > 1) { combo = 1; }
+
+    // Météores
+    for (const m of meteores) {
+      m.x += m.vx * dt; m.y += m.vy * dt; m.rot += m.vr * dt;
+      if (m.x < m.r || m.x > W - m.r) m.vx *= -1;
+      const dx = m.x - fusee.x, dy = m.y - fusee.y;
+      const touche = Math.hypot(dx, dy) < m.r * 0.85 + (fusee.bouclier > 0 ? 26 : 13);
+      if (touche && !m.mort) {
+        if (fusee.bouclier > 0) {
+          m.mort = true; score += 15;
+          explosion(m.x, m.y, COUL.glace, 16);
+          texteFlottant(m.x, m.y, '+15', COUL.glace);
+          bip(300, 0.12, 'triangle', 0.07, 300);
+        } else if (fusee.invuln <= 0) {
+          m.mort = true;
+          vies--; combo = 1;
+          fusee.invuln = 1.6;
+          secousse = 0.35;
+          explosion(fusee.x, fusee.y, COUL.braise, 30, 280);
+          explosion(m.x, m.y, COUL.rocheClair, 14);
+          bip(140, 0.35, 'sawtooth', 0.1, -90);
+          if (vies <= 0) { majHUD(); finPartie(); return; }
+        }
+      }
+    }
+    meteores = meteores.filter(m => !m.mort && m.y < H + 60);
+
+    // Bonus
+    for (const b of bonus) {
+      b.y += b.vy * dt; b.t += dt;
+      if (Math.hypot(b.x - fusee.x, b.y - fusee.y) < 28) {
+        b.pris = true;
+        if (b.type === 'etoile') {
+          if (temps - dernierBonus < 2.2) combo = Math.min(combo + 1, 5);
+          dernierBonus = temps;
+          const gain = 10 * combo;
+          score += gain;
+          texteFlottant(b.x, b.y, '+' + gain, COUL.ambre);
+          explosion(b.x, b.y, COUL.ambre, 10, 140);
+          bip(880 + combo * 110, 0.09, 'square', 0.05);
+        } else if (b.type === 'bouclier') {
+          fusee.bouclier = 5;
+          texteFlottant(b.x, b.y, 'BOUCLIER', COUL.glace);
+          bip(400, 0.25, 'sine', 0.09, 500);
+        } else {
+          vies = Math.min(vies + 1, 5);
+          texteFlottant(b.x, b.y, '+1 VIE', COUL.braise);
+          bip(660, 0.2, 'sine', 0.09, 300);
+        }
+      }
+    }
+    bonus = bonus.filter(b => !b.pris && b.y < H + 30);
+
+    majParticules(dt);
+    secousse = Math.max(0, secousse - dt);
+    majHUD();
+  }
+
+  function majParticules(dt) {
+    for (const p of particules) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.98; p.vie -= dt; }
+    particules = particules.filter(p => p.vie > 0);
+    for (const t of textes) { t.y -= 40 * dt; t.vie -= dt; }
+    textes = textes.filter(t => t.vie > 0);
+  }
+
+  // ---------- Dessin ----------
+  function dessinerFond(dt, vitesse) {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#0d0b24'); g.addColorStop(1, '#241a52');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    for (const s of fond) {
+      s.y += s.z * vitesse * dt / H;
+      if (s.y > 1) { s.y -= 1; s.x = Math.random(); }
+      ctx.globalAlpha = 0.25 + s.z * 0.6;
+      ctx.fillStyle = s.z > 0.85 ? COUL.ambre : COUL.encre;
+      ctx.fillRect(s.x * W, s.y * H, s.s, s.s * (vitesse > 100 ? 1 + s.z * 2 : 1));
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function dessinerFusee() {
+    const f = fusee;
+    if (f.invuln > 0 && Math.floor(f.invuln * 12) % 2 === 0) return;
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    ctx.rotate(Math.max(-0.35, Math.min(0.35, f.vx / 1200)));
+    // flamme
+    const fl = 14 + Math.random() * 10;
+    ctx.fillStyle = COUL.braise;
+    ctx.beginPath(); ctx.moveTo(-7, 14); ctx.lineTo(0, 14 + fl); ctx.lineTo(7, 14); ctx.fill();
+    ctx.fillStyle = COUL.ambre;
+    ctx.beginPath(); ctx.moveTo(-4, 14); ctx.lineTo(0, 14 + fl * 0.6); ctx.lineTo(4, 14); ctx.fill();
+    // ailerons
+    ctx.fillStyle = COUL.braise;
+    ctx.beginPath(); ctx.moveTo(-9, 4); ctx.lineTo(-17, 18); ctx.lineTo(-8, 15); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(9, 4); ctx.lineTo(17, 18); ctx.lineTo(8, 15); ctx.fill();
+    // corps
+    ctx.fillStyle = COUL.encre;
+    ctx.beginPath();
+    ctx.moveTo(0, -22);
+    ctx.quadraticCurveTo(12, -8, 9, 15);
+    ctx.lineTo(-9, 15);
+    ctx.quadraticCurveTo(-12, -8, 0, -22);
+    ctx.fill();
+    // hublot
+    ctx.fillStyle = COUL.glace;
+    ctx.beginPath(); ctx.arc(0, -4, 4.5, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+
+    if (f.bouclier > 0) {
+      const clignote = f.bouclier < 1.5 && Math.floor(f.bouclier * 8) % 2 === 0;
+      if (!clignote) {
+        ctx.strokeStyle = COUL.glace; ctx.lineWidth = 2;
+        ctx.globalAlpha = 0.5 + 0.3 * Math.sin(temps * 10);
+        ctx.beginPath(); ctx.arc(f.x, f.y, 28, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalAlpha = 0.12; ctx.fillStyle = COUL.glace; ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
+  function dessinerMeteore(m) {
+    ctx.save();
+    ctx.translate(m.x, m.y); ctx.rotate(m.rot);
+    // queue de feu
+    ctx.rotate(-m.rot);
+    const ang = Math.atan2(m.vy, m.vx);
+    const qg = ctx.createLinearGradient(0, 0, -Math.cos(ang) * m.r * 3, -Math.sin(ang) * m.r * 3);
+    qg.addColorStop(0, 'rgba(255,107,91,0.55)'); qg.addColorStop(1, 'rgba(255,107,91,0)');
+    ctx.fillStyle = qg;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(ang + 1.57) * m.r * 0.8, Math.sin(ang + 1.57) * m.r * 0.8);
+    ctx.lineTo(-Math.cos(ang) * m.r * 3, -Math.sin(ang) * m.r * 3);
+    ctx.lineTo(Math.cos(ang - 1.57) * m.r * 0.8, Math.sin(ang - 1.57) * m.r * 0.8);
+    ctx.fill();
+    ctx.rotate(m.rot);
+    // roche
+    ctx.fillStyle = COUL.roche;
+    ctx.strokeStyle = COUL.rocheClair; ctx.lineWidth = 2;
+    ctx.beginPath();
+    m.forme.forEach((k, i) => {
+      const a = i / m.forme.length * Math.PI * 2;
+      const x = Math.cos(a) * m.r * k, y = Math.sin(a) * m.r * k;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    });
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(13,11,36,0.35)';
+    ctx.beginPath(); ctx.arc(m.r * 0.25, -m.r * 0.2, m.r * 0.25, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(-m.r * 0.3, m.r * 0.3, m.r * 0.15, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function etoile(x, y, r1, r2, n) {
+    ctx.beginPath();
+    for (let i = 0; i < n * 2; i++) {
+      const r = i % 2 ? r2 : r1, a = i * Math.PI / n - Math.PI / 2;
+      i ? ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r) : ctx.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r);
+    }
+    ctx.closePath();
+  }
+
+  function dessinerBonus(b) {
+    const pulse = 1 + Math.sin(b.t * 6) * 0.12;
+    ctx.save();
+    if (b.type === 'etoile') {
+      ctx.fillStyle = COUL.ambre;
+      ctx.shadowColor = COUL.ambre; ctx.shadowBlur = 14;
+      etoile(b.x, b.y, 12 * pulse, 5 * pulse, 5); ctx.fill();
+    } else if (b.type === 'bouclier') {
+      ctx.strokeStyle = COUL.glace; ctx.lineWidth = 3;
+      ctx.shadowColor = COUL.glace; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.arc(b.x, b.y, 12 * pulse, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = COUL.glace;
+      ctx.beginPath(); ctx.arc(b.x, b.y, 5, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.fillStyle = COUL.braise;
+      ctx.shadowColor = COUL.braise; ctx.shadowBlur = 14;
+      ctx.font = `${Math.round(24 * pulse)}px "Chakra Petch", sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('♥', b.x, b.y);
+    }
+    ctx.restore();
+  }
+
+  function dessiner(dt) {
+    ctx.save();
+    if (secousse > 0 && !reduitMouvement) ctx.translate(alea(-6, 6) * secousse * 3, alea(-6, 6) * secousse * 3);
+    const vitesseFond = etat === 'jeu' ? 120 + niveau * 25 : etat === 'pause' ? 0 : 40;
+    dessinerFond(dt, vitesseFond);
+    for (const b of bonus) dessinerBonus(b);
+    for (const m of meteores) dessinerMeteore(m);
+    for (const p of particules) {
+      ctx.globalAlpha = Math.max(0, p.vie / p.max);
+      ctx.fillStyle = p.coul;
+      ctx.fillRect(p.x - p.taille / 2, p.y - p.taille / 2, p.taille, p.taille);
+    }
+    ctx.globalAlpha = 1;
+    if (fusee && etat !== 'fin') dessinerFusee();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const t of textes) {
+      ctx.globalAlpha = Math.min(1, t.vie * 2);
+      ctx.fillStyle = t.coul;
+      ctx.font = '14px Silkscreen, monospace';
+      ctx.fillText(t.txt, t.x, t.y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  // ---------- Boucle ----------
+  let avant = performance.now();
+  function boucle(maintenant) {
+    const dt = Math.min(0.05, (maintenant - avant) / 1000);
+    avant = maintenant;
+    if (etat === 'jeu') maj(dt);
+    else if (etat === 'fin') majParticules(dt);
+    dessiner(etat === 'pause' ? 0 : dt);
+    requestAnimationFrame(boucle);
+  }
+
+  // ---------- Lancement ----------
+  redim();
+  creerFond();
+  ui.recordMenu.textContent = record > 0 ? 'Record : ' + record : '';
+  requestAnimationFrame(boucle);
+})();
+</script>
+</body>
+</html>
