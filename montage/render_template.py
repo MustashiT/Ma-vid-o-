@@ -11,11 +11,15 @@ def src_frame(t):
     return orig[min(len(orig)-1,int(round(t*59.0)))]
 END=23.283
 # (out0,out1,src0,src1,is_kill) — cut points measured frame-exact from the reference template
-segs=[(0,7.683,10.30,17.983,0),(7.683,8.750,17.983,18.517,1),
-      (8.750,10.783,18.517,20.15,0),(10.783,11.850,20.15,20.683,1),
-      (11.850,13.850,23.0,25.0,0),(13.850,14.883,25.0,25.517,1),
-      (14.883,16.917,25.517,27.05,0),(16.917,18.050,27.05,27.617,1),
-      (18.050,20.017,17.0,17.983,0),(20.017,END,17.983,18.80,1)]
+# kill parts = freeze frame on the kill + skull, like the reference template
+segs=[(0,7.683,10.367,18.05,0),(7.683,8.750,18.05,18.05,1),
+      (8.750,10.783,18.167,20.2,0),(10.783,11.850,20.2,20.2,1),
+      (11.850,13.850,23.1,25.1,0),(13.850,14.883,25.1,25.1,1),
+      (14.883,16.917,25.067,27.1,0),(16.917,18.050,27.1,27.1,1),
+      (18.050,20.017,16.083,18.05,0),(20.017,END,18.05,18.05,1)]
+sk=cv2.imread('skull.png',cv2.IMREAD_UNCHANGED); SK=128
+sk=cv2.resize(sk,(SK,SK),interpolation=cv2.INTER_AREA)
+SKA=sk[...,3:4].astype(np.float32)/255; SKC=sk[...,:3].astype(np.float32)
 x=np.arange(256)/255.0; lift=np.power(x,0.62); sc=lambda v: 1/(1+np.exp(-5*(v-0.5)))
 LUT=np.clip((sc(lift)-sc(0))/(sc(1)-sc(0))*255,0,255).astype(np.uint8)
 # shake keyframes for the kill entry (fraction of H): up -> down -> up -> settle
@@ -36,6 +40,11 @@ def render(i):
     img=cv2.warpAffine(fr,M,(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REFLECT)
     img=cv2.LUT(img,LUT)
     img=cv2.filter2D(img,-1,np.array([[0,-0.4,0],[-0.4,2.6,-0.4],[0,-0.4,0]],np.float32))
+    if kill:  # skull sits in the frame so it shakes/blurs with it
+        cy=int(H*0.5+W*0.2+oy)-SK//2; cx=W//2-SK//2
+        if 0<=cy<=H-SK:
+            roi=img[cy:cy+SK,cx:cx+SK].astype(np.float32)
+            img[cy:cy+SK,cx:cx+SK]=(roi*(1-SKA)+SKC*SKA).astype(np.uint8)
     f=img.astype(np.float32)/255
     if kill:
         if blurk>2: f=cv2.blur(f,(1,blurk))
