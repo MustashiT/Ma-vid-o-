@@ -7,7 +7,7 @@ V=np.frombuffer(raw,np.uint8).reshape(-1,720,1280,3)
 def fr(t): return V[min(len(V)-1,max(0,int(round(t*30))))]
 # timings measured on the reference (13.03 s): action 0-8.80, freeze 8.80-12.10, fade 12.10-12.60, black to end
 T_FRZ,T_FADE0,T_FADE1,END=8.80,12.10,12.60,13.033
-S0,KILL=1.62,11.12          # source: start of action, headshot knock frame
+S0,KILL=2.05,11.56          # source: start of action, frame where the "K-O !" banner is up
 CX,CY,CS=350,52,580        # square crop on the player/crosshair, HUD out
 sk=cv2.imread('skull2.png',cv2.IMREAD_UNCHANGED); SKS=96
 sk=cv2.resize(sk,(SKS,SKS),interpolation=cv2.INTER_AREA); SKA=sk[...,3:4]/255.0; SKC=sk[...,:3].astype(float)
@@ -27,7 +27,7 @@ def render(i):
     if frz:
         g=f.mean(2,keepdims=True); g=np.clip((g-0.5)*1.25+0.55,0,1); f=np.repeat(g,3,2)
         if t>=T_FRZ+2/FPS:
-            y0=int(SQ*0.55)-SKS//2; x0=SQ//2-SKS//2
+            y0=int(SQ*0.53)-SKS//2; x0=SQ//2-SKS//2
             f[y0:y0+SKS,x0:x0+SKS]=f[y0:y0+SKS,x0:x0+SKS]*(1-SKA)+SKC/255*SKA
     # 9:16 canvas: blurred, darkened copy behind the square
     bg=cv2.resize(f,(SQ//8,SQ//8)); bg=cv2.GaussianBlur(bg,(0,0),3); bg=cv2.resize(bg,(H,H))[:,(H-W)//2:(H-W)//2+W]*0.55
